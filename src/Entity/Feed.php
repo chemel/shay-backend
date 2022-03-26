@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 class Feed
 {
     #[ORM\Id]
@@ -22,7 +23,7 @@ class Feed
     private $title;
 
     #[ORM\Column(type: 'boolean')]
-    private $enabled;
+    private $enabled = true;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $fetchedAt;
@@ -131,5 +132,11 @@ class Feed
         }
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
