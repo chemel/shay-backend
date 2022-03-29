@@ -6,6 +6,7 @@ use App\Repository\EntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
+#[ORM\HasLifecycleCallbacks()]
 class Entry
 {
     #[ORM\Id]
@@ -22,7 +23,7 @@ class Entry
     #[ORM\Column(type: 'text')]
     private $title;
 
-    #[ORM\Column(type: 'text')]
+    #[ORM\Column(type: 'text', nullable: true)]
     private $content;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -84,7 +85,7 @@ class Entry
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
@@ -137,5 +138,11 @@ class Entry
         $this->feed = $feed;
 
         return $this;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
     }
 }
