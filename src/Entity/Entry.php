@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\EntryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
+#[ApiResource]
 class Entry
 {
     #[ORM\Id]

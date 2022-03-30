@@ -6,9 +6,11 @@ use App\Repository\FeedRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
+#[ApiResource]
 class Feed
 {
     #[ORM\Id]
