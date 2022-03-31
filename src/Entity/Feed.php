@@ -36,6 +36,10 @@ class Feed
     #[ORM\OneToMany(mappedBy: 'feed', targetEntity: Entry::class, orphanRemoval: true)]
     private $entries;
 
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'feeds')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $category;
+
     public function __construct()
     {
         $this->entries = new ArrayCollection();
@@ -132,6 +136,18 @@ class Feed
                 $entry->setFeed(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
