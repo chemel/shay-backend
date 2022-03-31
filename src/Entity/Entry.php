@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\EntryRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource]
+#[ApiFilter(NumericFilter::class, properties: ['feed.id'])]
 class Entry
 {
     #[ORM\Id]
