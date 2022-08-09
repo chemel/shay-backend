@@ -12,6 +12,9 @@ php bin/console doctrine:database:create
 php bin/console doctrine:schema:update --force
 php bin/console doctrine:fixtures:load
 
+# Création d'une paire de clés pour JWT
+php bin/console lexik:jwt:generate-keypair
+
 # Compilation des assets
 npm install
 npm run build
