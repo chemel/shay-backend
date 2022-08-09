@@ -31,9 +31,6 @@
     "doctrine/common": {
         "version": "3.2.2"
     },
-    "doctrine/data-fixtures": {
-        "version": "1.5.2"
-    },
     "doctrine/dbal": {
         "version": "3.3.4"
     },
@@ -58,7 +55,7 @@
         "version": "3.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
-            "branch": "master",
+            "branch": "main",
             "version": "3.0",
             "ref": "1f5514cfa15b947298df4d771e694e578d4c204d"
         },
@@ -145,6 +142,20 @@
     "phpstan/phpdoc-parser": {
         "version": "1.2.0"
     },
+    "phpunit/phpunit": {
+        "version": "9.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "9.3",
+            "ref": "a6249a6c4392e9169b87abf93225f7f9f59025e6"
+        },
+        "files": [
+            ".env.test",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
+    },
     "psr/cache": {
         "version": "3.0.0"
     },
@@ -171,9 +182,6 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
-    },
-    "simplepie/simplepie": {
-        "version": "1.5.8"
     },
     "symfony/asset": {
         "version": "v6.0.3"
@@ -361,6 +369,21 @@
     },
     "symfony/password-hasher": {
         "version": "v6.0.3"
+    },
+    "symfony/phpunit-bridge": {
+        "version": "6.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "5.3",
+            "ref": "97cb3dc7b0f39c7cfc4b7553504c9d7b7795de96"
+        },
+        "files": [
+            ".env.test",
+            "bin/phpunit",
+            "phpunit.xml.dist",
+            "tests/bootstrap.php"
+        ]
     },
     "symfony/polyfill-intl-grapheme": {
         "version": "v1.25.0"
