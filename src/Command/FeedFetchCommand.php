@@ -57,7 +57,7 @@ class FeedFetchCommand extends Command
             }
 
             if($error) {
-                $feed->setFetchedAt(new \DateTimeImmutable());
+                $feed->setFetchedAt(new \DateTime());
                 $feed->setErrorMessage($error);
                 $feed->incrementErrorCount();
 
@@ -89,7 +89,7 @@ class FeedFetchCommand extends Command
                 $entry = new Entry();
                 $entry->setTitle($item->get_title());
                 $entry->setPermalink($item->get_permalink());
-                $entry->setDate(new \DateTimeImmutable($item->get_date('Y-m-d h:i:s')));
+                $entry->setDate(new \DateTime($item->get_date('Y-m-d h:i:s')));
                 $entry->setContent($item->get_description());
                 $entry->setHash($hash);
                 $entry->setFeed($feed);
@@ -98,7 +98,7 @@ class FeedFetchCommand extends Command
                 $this->em->flush();
             }
 
-            $feed->setFetchedAt(new \DateTimeImmutable());
+            $feed->setFetchedAt(new \DateTime());
 
             $this->em->persist($feed);
             $this->em->flush();

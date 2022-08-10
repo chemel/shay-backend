@@ -2,11 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\FeedRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\FeedRepository;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -27,8 +28,8 @@ class Feed
     #[ORM\Column(type: 'boolean')]
     private $enabled = true;
 
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private $fetchedAt;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fetchedAt = null;
 
     #[ORM\Column(type: 'integer', options: ["default" => 0])]
     private $errorCount;
@@ -36,8 +37,8 @@ class Feed
     #[ORM\Column(type: 'text', nullable: true)]
     private $errorMessage;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private $createdAt;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeInterface $createdAt;
 
     #[ORM\OneToMany(mappedBy: 'feed', targetEntity: Entry::class, orphanRemoval: true)]
     private $entries;
@@ -97,12 +98,12 @@ class Feed
         return $this->enabled;
     }
 
-    public function getFetchedAt(): ?\DateTimeImmutable
+    public function getFetchedAt(): ?\DateTimeInterface
     {
         return $this->fetchedAt;
     }
 
-    public function setFetchedAt(?\DateTimeImmutable $fetchedAt): self
+    public function setFetchedAt(?\DateTimeInterface $fetchedAt): self
     {
         $this->fetchedAt = $fetchedAt;
 
@@ -140,12 +141,12 @@ class Feed
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
@@ -197,6 +198,6 @@ class Feed
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTime();
     }
 }
