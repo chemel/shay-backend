@@ -45,6 +45,15 @@ class FeedRepository extends ServiceEntityRepository
         }
     }
 
+    public function getFeedsToFetch()
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.enabled = true')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    
     // /**
     //  * @return Feed[] Returns an array of Feed objects
     //  */
