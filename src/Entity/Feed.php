@@ -31,14 +31,14 @@ class Feed
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fetchedAt = null;
 
-    #[ORM\Column(type: Types::INTEGER, options: ["default" => 0])]
-    private $errorCount;
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private $errorCount = 0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private $errorMessage;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeInterface $createdAt;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'feed', targetEntity: Entry::class, orphanRemoval: true)]
     private $entries;

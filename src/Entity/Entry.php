@@ -20,8 +20,8 @@ class Entry
     #[ORM\Column(type: Types::INTEGER)]
     private $id;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeInterface $date;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     private $permalink;
@@ -38,8 +38,8 @@ class Entry
     #[ORM\Column(type: Types::BOOLEAN)]
     private $readed = false;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private \DateTimeInterface $createdAt;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: Feed::class, inversedBy: 'entries')]
     #[ORM\JoinColumn(nullable: false)]
