@@ -30,6 +30,12 @@ class Feed
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $fetchedAt;
 
+    #[ORM\Column(type: 'integer', options: ["default" => 0])]
+    private $errorCount;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private $errorMessage;
+
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
 
@@ -86,6 +92,11 @@ class Feed
         return $this;
     }
 
+    public function isEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
     public function getFetchedAt(): ?\DateTimeImmutable
     {
         return $this->fetchedAt;
@@ -94,6 +105,37 @@ class Feed
     public function setFetchedAt(?\DateTimeImmutable $fetchedAt): self
     {
         $this->fetchedAt = $fetchedAt;
+
+        return $this;
+    }
+
+    public function getErrorCount(): ?int
+    {
+        return $this->errorCount;
+    }
+
+    public function setErrorCount(int $errorCount): self
+    {
+        $this->errorCount = $errorCount;
+
+        return $this;
+    }
+
+    public function incrementErrorCount(): self
+    {
+        $this->errorCount++;
+
+        return $this;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
+    }
+
+    public function setErrorMessage(?string $errorMessage): self
+    {
+        $this->errorMessage = $errorMessage;
 
         return $this;
     }

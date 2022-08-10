@@ -43,7 +43,37 @@ class FeedFetchCommand extends Command
             $sp = new \SimplePie();
             $sp->set_feed_url($feed->getUrl());
             $sp->set_cache_location(__DIR__.'/../../var/cache');
-            $sp->init();
+            
+            $error = false;
+
+            try {
+                $success = $sp->init();
+            } catch (\Throwable $th) {
+                $error = 'Simplepie return exception : ' . $th->getMessage();
+            }
+
+            if($success !== true) {
+                $error = 'Simplepie fail to parse the feed';
+            }
+
+            if($error) {
+                $feed->setFetchedAt(new \DateTimeImmutable());
+                $feed->setErrorMessage($error);
+                $feed->incrementErrorCount();
+
+                if($feed->getErrorCount() >= 100) { // Disable feed after 100 errors
+                    $feed->setEnabled(false);
+                }
+
+                $this->em->persist($feed);
+                $this->em->flush();
+
+                continue;
+            }
+            else {
+                $feed->setErrorMessage(null);
+                $feed->setErrorCount(0);
+            }
 
             $items = $sp->get_items();
 
