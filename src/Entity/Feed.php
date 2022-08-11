@@ -11,7 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-#[ApiResource]
+#[ApiResource(attributes: ["pagination_enabled" => false])]
 class Feed
 {
     #[ORM\Id]
