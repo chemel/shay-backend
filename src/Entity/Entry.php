@@ -11,7 +11,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-#[ApiResource]
+#[ApiResource(attributes: ["pagination_enabled" => false])]
 #[ApiFilter(NumericFilter::class, properties: ['feed.id'])]
 class Entry
 {
