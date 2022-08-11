@@ -23,7 +23,7 @@ class Entry
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::TEXT)]
     private $permalink;
 
     #[ORM\Column(type: Types::TEXT)]
