@@ -200,4 +200,12 @@ class Feed
     {
         $this->createdAt = new \DateTime();
     }
+
+    #[ORM\PreUpdate]
+    public function preUpdate(): void
+    {
+        if($this->getTitle() === null) {
+            $this->setTitle($this->getUrl());
+        }
+    }
 }
