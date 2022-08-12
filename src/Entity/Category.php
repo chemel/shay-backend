@@ -10,7 +10,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[ApiResource(attributes: ["pagination_enabled" => false])]
+#[ApiResource(order: ["name" => "ASC"], attributes: ["pagination_enabled" => false])]
 class Category
 {
     #[ORM\Id]
