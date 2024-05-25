@@ -1,24 +1,25 @@
 security:
-    enable_authenticator_manager: true
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    # https://symfony.com/doc/current/security.html#c-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+        App\Entity\User: 'auto'
+
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        users:
             entity:
                 class: App\Entity\User
                 property: username
+
     firewalls:
         dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            pattern: ^/_(profiler|wdt)
             security: false
         main:
             stateless: true
-            provider: app_user_provider
+            provider: users
             json_login:
-                check_path: /api/authentication_token
+                check_path: auth # The name in routes.yaml is enough for mapping
                 username_path: username
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
