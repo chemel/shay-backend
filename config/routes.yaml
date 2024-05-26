@@ -5,5 +5,5 @@ controllers:
     type: attribute
 
 auth:
-    path: /authentication_token
+    path: /api/authentication_token
     methods: ['POST']
