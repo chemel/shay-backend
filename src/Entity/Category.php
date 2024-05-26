@@ -6,11 +6,18 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[ApiResource(order: ["name" => "ASC"], attributes: ["pagination_enabled" => false])]
+#[ApiResource(
+    operations: [
+        new GetCollection(uriTemplate: '/categories'),
+    ],
+    order: ["name" => "ASC"],
+    paginationEnabled: false
+)]
 class Category
 {
     #[ORM\Id]

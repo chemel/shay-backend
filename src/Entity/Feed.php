@@ -6,12 +6,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\FeedRepository;
 use Doctrine\Common\Collections\Collection;
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-#[ApiResource(order: ["title" => "ASC"], attributes: ["pagination_enabled" => false])]
+#[ApiResource(
+    operations: [
+        new GetCollection(uriTemplate: '/feeds'),
+    ],
+    order: ["title" => "ASC"],
+    paginationEnabled: false
+)]
 class Feed
 {
     #[ORM\Id]

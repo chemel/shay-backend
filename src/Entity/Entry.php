@@ -5,14 +5,22 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\EntryRepository;
-use ApiPlatform\Core\Annotation\ApiFilter;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
-#[ApiResource(order: ["date" => "DESC"], attributes: ["pagination_enabled" => false])]
-#[ApiFilter(NumericFilter::class, properties: ['feed.id'])]
+#[ApiResource(
+    operations: [
+        new GetCollection(uriTemplate: '/entries'),
+        new Get(uriTemplate: '/entries/{id}', requirements: ['id' => '\d+']),
+    ],
+    order: ["date" => "DESC"])
+]
+#[ApiFilter(NumericFilter::class, properties: ['feed.id', 'feed.category.id'])]
 class Entry
 {
     #[ORM\Id]
