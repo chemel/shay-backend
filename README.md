@@ -14,10 +14,6 @@ php bin/console doctrine:fixtures:load
 
 # Création d'une paire de clés pour JWT
 php bin/console lexik:jwt:generate-keypair
-
-# Compilation des assets
-npm install
-npm run build
 ```
 
 # Usage
@@ -25,7 +21,7 @@ npm run build
 ## Get a JWT Token
 
 ```console
-curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"username":"admin","password":"admin"}' http://127.0.0.1:8000/authentication_token
+curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"username":"admin","password":"admin"}' http://127.0.0.1:8000/api/authentication_token
 ```
 
 Replace admin / admin with your credentials
