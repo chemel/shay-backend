@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -33,6 +34,8 @@ class Feed
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     #[Groups('read')]
+    #[Assert\Url(message: "L'URL '{{ value }}' n'est pas une URL valide")]
+    #[Assert\NotBlank(message: "L'URL ne peut pas être vide")]
     private $url;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
