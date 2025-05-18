@@ -11,6 +11,7 @@ composer install
 php bin/console doctrine:database:create
 php bin/console doctrine:schema:update --force
 php bin/console doctrine:fixtures:load
+php bin/console app:feed:fetch
 php bin/console app:user-create
 
 # Création d'une paire de clés pour JWT
