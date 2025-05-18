@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -18,32 +19,39 @@ use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
         new GetCollection(uriTemplate: '/entries'),
         new Get(uriTemplate: '/entries/{id}', requirements: ['id' => '\d+']),
     ],
-    order: ["date" => "DESC"])
-]
+    order: ["date" => "DESC"],
+    normalizationContext: ['groups' => ['read']]
+)]
 #[ApiFilter(NumericFilter::class, properties: ['feed.id', 'feed.category.id'])]
 class Entry
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups('read')]
     private $id;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups('read')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('read')]
     private $permalink;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups('read')]
     private $title;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('read')]
     private $content;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     private $hash;
 
     #[ORM\Column(type: Types::BOOLEAN)]
+    #[Groups('read')]
     private $readed = false;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

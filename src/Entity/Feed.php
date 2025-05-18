@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -17,19 +18,23 @@ use ApiPlatform\Metadata\GetCollection;
         new GetCollection(uriTemplate: '/feeds'),
     ],
     order: ["title" => "ASC"],
-    paginationEnabled: false
+    paginationEnabled: false,
+    normalizationContext: ['groups' => ['read']],
 )]
 class Feed
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups('read')]
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Groups('read')]
     private $url;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[Groups('read')]
     private $title;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -52,6 +57,7 @@ class Feed
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'feeds')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read')]
     private $category;
 
     public function __construct()

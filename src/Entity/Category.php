@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -16,16 +17,19 @@ use Doctrine\Common\Collections\ArrayCollection;
         new GetCollection(uriTemplate: '/categories'),
     ],
     order: ["name" => "ASC"],
-    paginationEnabled: false
+    paginationEnabled: false,
+    normalizationContext: ['groups' => ['read']]
 )]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups('read')]
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Groups('read')]
     private $name;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Feed::class)]
