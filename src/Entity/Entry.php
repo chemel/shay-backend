@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -18,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new GetCollection(uriTemplate: '/entries'),
         new Get(uriTemplate: '/entries/{id}', requirements: ['id' => '\d+']),
+        new Patch(uriTemplate: '/entries/{id}'),
     ],
     order: ["date" => "DESC"],
     normalizationContext: ['groups' => ['read']]
