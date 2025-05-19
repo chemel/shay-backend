@@ -10,6 +10,8 @@ use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository for managing Entry entities.
+ *
  * @method Entry|null find($id, $lockMode = null, $lockVersion = null)
  * @method Entry|null findOneBy(array $criteria, array $orderBy = null)
  * @method Entry[]    findAll()
@@ -17,12 +19,22 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EntryRepository extends ServiceEntityRepository
 {
+    /**
+     * Repository constructor.
+     *
+     * @param ManagerRegistry $registry The Doctrine registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Entry::class);
     }
 
     /**
+     * Adds an entry to the database.
+     *
+     * @param Entry $entity The entry to add
+     * @param bool  $flush  Whether to flush the changes immediately
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -35,6 +47,11 @@ class EntryRepository extends ServiceEntityRepository
     }
 
     /**
+     * Removes an entry from the database.
+     *
+     * @param Entry $entity The entry to remove
+     * @param bool  $flush  Whether to flush the changes immediately
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -46,6 +63,14 @@ class EntryRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * Checks if an entry with the given hash exists for a specific feed.
+     *
+     * @param Feed  $feed The feed to check
+     * @param mixed $hash The hash to check
+     *
+     * @return bool True if the entry exists, false otherwise
+     */
     public function exists(Feed $feed, $hash): bool
     {
         return $this->createQueryBuilder('e')
@@ -57,6 +82,13 @@ class EntryRepository extends ServiceEntityRepository
             ->getSingleScalarResult() > 0;
     }
 
+    /**
+     * Purges old entries from a feed based on its purge date.
+     *
+     * @param Feed $feed The feed to purge entries from
+     *
+     * @return bool True if the purge was successful
+     */
     public function purge(Feed $feed): bool
     {
         return $this->createQueryBuilder('e')

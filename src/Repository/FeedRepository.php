@@ -9,6 +9,8 @@ use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository for managing Feed entities.
+ *
  * @method Feed|null find($id, $lockMode = null, $lockVersion = null)
  * @method Feed|null findOneBy(array $criteria, array $orderBy = null)
  * @method Feed[]    findAll()
@@ -16,12 +18,22 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class FeedRepository extends ServiceEntityRepository
 {
+    /**
+     * Repository constructor.
+     *
+     * @param ManagerRegistry $registry The Doctrine registry
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Feed::class);
     }
 
     /**
+     * Adds a feed to the database.
+     *
+     * @param Feed $entity The feed to add
+     * @param bool $flush  Whether to flush the changes immediately
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -34,6 +46,11 @@ class FeedRepository extends ServiceEntityRepository
     }
 
     /**
+     * Removes a feed from the database.
+     *
+     * @param Feed $entity The feed to remove
+     * @param bool $flush  Whether to flush the changes immediately
+     *
      * @throws ORMException
      * @throws OptimisticLockException
      */
@@ -45,6 +62,17 @@ class FeedRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * Gets all feeds that need to be fetched.
+     *
+     * Returns enabled feeds that either:
+     * - Have never been fetched (fetchAt is NULL)
+     * - Are due for fetching (fetchAt is in the past)
+     *
+     * Results are ordered by fetchAt in ascending order.
+     *
+     * @return Feed[] Array of feeds that need to be fetched
+     */
     public function getFeedsToFetch()
     {
         $now = new \DateTime('now');
