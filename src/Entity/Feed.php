@@ -45,6 +45,12 @@ class Feed
     #[ORM\Column(type: Types::BOOLEAN)]
     private $enabled = true;
 
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 5])]
+    private $fetchEvery = 5;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $fetchAt = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fetchedAt = null;
 
@@ -53,6 +59,9 @@ class Feed
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private $errorMessage;
+
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 30])]
+    private $purge = 30;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
@@ -116,6 +125,30 @@ class Feed
         return $this->enabled;
     }
 
+    public function getFetchEvery(): ?int
+    {
+        return $this->fetchEvery;
+    }
+
+    public function setFetchEvery(int $fetchEvery): static
+    {
+        $this->fetchEvery = $fetchEvery;
+
+        return $this;
+    }
+
+    public function getFetchAt(): ?\DateTimeInterface
+    {
+        return $this->fetchAt;
+    }
+
+    public function setFetchAt(?\DateTimeInterface $fetchAt): static
+    {
+        $this->fetchAt = $fetchAt;
+
+        return $this;
+    }
+
     public function getFetchedAt(): ?\DateTimeInterface
     {
         return $this->fetchedAt;
@@ -155,6 +188,25 @@ class Feed
     public function setErrorMessage(?string $errorMessage): self
     {
         $this->errorMessage = $errorMessage;
+
+        return $this;
+    }
+
+    public function getPurge(): ?int
+    {
+        return $this->purge;
+    }
+
+    public function getPurgeDate(): \DateTimeInterface
+    {
+        $purgeDate = new \DateTime();
+        $purgeDate->modify('-' . $this->getPurge() . ' days');
+        return $purgeDate;
+    }
+
+    public function setPurge(int $purge): static
+    {
+        $this->purge = $purge;
 
         return $this;
     }

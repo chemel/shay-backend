@@ -4,8 +4,12 @@ namespace App\Command;
 
 use App\Entity\Feed;
 use App\Entity\Entry;
+use App\Repository\EntryRepository;
+use App\Repository\FeedRepository;
+use App\Service\FeedFetcherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -13,7 +17,9 @@ use Symfony\Component\Console\Attribute\AsCommand;
 #[AsCommand(name: 'app:feed:fetch')]
 class FeedFetchCommand extends Command
 {
-    private $em;
+    protected EntityManagerInterface $em;
+    protected FeedRepository $feedRepository;
+    protected EntryRepository $entryRepository;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -26,84 +32,39 @@ class FeedFetchCommand extends Command
     {
         $this
             ->setDescription('Fetch all feeds')
+            ->addOption('daemon', 'd', InputOption::VALUE_OPTIONAL, 'Daemon mode', false)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $feedRepository = $this->em->getRepository(Feed::class);
-        $entryRepository = $this->em->getRepository(Entry::class);
+        $daemonMode = $input->getOption('daemon');
 
-        $feeds = $feedRepository->getFeedsToFetch();
-        shuffle($feeds);
+        $this->feedRepository = $this->em->getRepository(Feed::class);
+        $this->entryRepository = $this->em->getRepository(Entry::class);
 
-        foreach($feeds as $feed) {
-            $output->writeln(($feed->getUrl()));
-
-            $sp = new \SimplePie();
-            $sp->set_feed_url($feed->getUrl());
-            $sp->set_cache_location(__DIR__.'/../../var/cache');
-            
-            $error = false;
-
-            try {
-                $success = $sp->init();
-            } catch (\Throwable $th) {
-                $error = 'Simplepie return exception : ' . $th->getMessage();
+        if($daemonMode !== false) {
+            while(true) {
+                $this->fetchAll($output);
+                sleep(20);
             }
-
-            if($success !== true) {
-                $error = 'Simplepie fail to parse the feed';
-            }
-
-            if($error) {
-                $feed->setFetchedAt(new \DateTime());
-                $feed->setErrorMessage($error);
-                $feed->incrementErrorCount();
-
-                if($feed->getErrorCount() >= 100) { // Disable feed after 100 errors
-                    $feed->setEnabled(false);
-                }
-
-                $this->em->persist($feed);
-                $this->em->flush();
-
-                continue;
-            }
-            else {
-                $feed->setErrorMessage(null);
-                $feed->setErrorCount(0);
-            }
-
-            $items = $sp->get_items();
-
-            foreach ($items as $item) {
-                $hash = $item->get_id(true);
-
-                $exist = $entryRepository->exists($feed, $hash);
-
-                if($exist) {
-                    continue;
-                }
-
-                $entry = new Entry();
-                $entry->setTitle($item->get_title());
-                $entry->setPermalink($item->get_permalink());
-                $entry->setDate(new \DateTime($item->get_date('Y-m-d h:i:s')));
-                $entry->setContent($item->get_description());
-                $entry->setHash($hash);
-                $entry->setFeed($feed);
-
-                $this->em->persist($entry);
-                $this->em->flush();
-            }
-
-            $feed->setFetchedAt(new \DateTime());
-
-            $this->em->persist($feed);
-            $this->em->flush();
+        }
+        else {
+            $this->fetchAll($output);
         }
 
         return Command::SUCCESS;
+    }
+
+    protected function fetchAll(OutputInterface $output) {
+        $feeds = $this->feedRepository->getFeedsToFetch();
+
+        foreach($feeds as $feed)
+        {
+            $output->writeln(($feed->getUrl()));
+            $fetcher = new FeedFetcherService($this->em);
+            $fetcher->fetch($feed);
+            $this->entryRepository->purge($feed);
+        }
     }
 }

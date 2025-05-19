@@ -88,4 +88,15 @@ class EntryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult() > 0;
     }
+
+    public function purge(Feed $feed): bool
+    {
+        return $this->createQueryBuilder('e')
+            ->delete()
+            ->where('e.date < :date')
+            ->setParameter('date', $feed->getPurgeDate())
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

@@ -47,8 +47,13 @@ class FeedRepository extends ServiceEntityRepository
 
     public function getFeedsToFetch()
     {
+        $now = new \DateTime('now');
+
         return $this->createQueryBuilder('f')
             ->andWhere('f.enabled = true')
+            ->andWhere('(f.fetchAt IS NULL OR f.fetchAt < :now)')
+            ->setParameter('now', $now)
+            ->orderBy('f.fetchAt', 'ASC')
             ->getQuery()
             ->getResult()
         ;
