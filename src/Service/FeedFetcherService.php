@@ -7,16 +7,31 @@ use SimplePie\SimplePie;
 use App\Entity\Feed;
 use App\Entity\Entry;
 
+/**
+ * Service for fetching and processing RSS/Atom feeds
+ */
 class FeedFetcherService
 {
-    protected EntityManagerInterface $em;
     protected SimplePie $simplePie;
 
-    public function __construct(EntityManagerInterface $em)
+    /**
+     * Service constructor
+     * 
+     * @param EntityManagerInterface $em The Doctrine entity manager
+     */
+    public function __construct(
+        protected EntityManagerInterface $em
+    )
     {
         $this->em = $em;
     }
 
+    /**
+     * Fetches and processes an RSS/Atom feed
+     * 
+     * @param Feed $feed The feed to fetch
+     * @return bool True if the fetch was successful, false otherwise
+     */
     public function fetch(Feed &$feed): bool
     {
         $entryRepository = $this->em->getRepository(Entry::class);
@@ -68,6 +83,11 @@ class FeedFetcherService
         return true;
     }
 
+    /**
+     * Initializes the SimplePie instance for feed fetching
+     * 
+     * @return SimplePie The configured SimplePie instance
+     */
     public function init(): SimplePie
     {
         $simplepieCacheDirectory = __DIR__.'/../../var/cache/simplepie';
@@ -79,6 +99,12 @@ class FeedFetcherService
         return $this->simplePie = $sp;
     }
 
+    /**
+     * Performs the request to fetch the feed content
+     * 
+     * @param string $url The URL of the feed to fetch
+     * @return array Array containing the request status and optional message
+     */
     public function request(string $url): array
     {
         $this->simplePie->set_feed_url($url);
@@ -104,6 +130,13 @@ class FeedFetcherService
         return ['success' => $success, 'message' => $message];
     }
 
+    /**
+     * Handles feed fetching errors
+     * 
+     * @param Feed $feed The concerned feed
+     * @param array $response The request response
+     * @return bool True if no error occurred, false otherwise
+     */
     public function handleError(Feed &$feed, array $response): bool
     {
         extract($response);
@@ -126,6 +159,13 @@ class FeedFetcherService
         return $success;
     }
 
+    /**
+     * Transforms a SimplePie item into a feed entry
+     * 
+     * @param mixed $item The SimplePie item to transform
+     * @param Feed $feed The parent feed
+     * @return Entry The created entry
+     */
     public function mapData($item, Feed &$feed): Entry
     {
         // La date du post
@@ -157,6 +197,12 @@ class FeedFetcherService
         return $entry;
     }
 
+    /**
+     * Calculates the next feed fetch date
+     * 
+     * @param Feed $feed The concerned feed
+     * @param int $nbEntriesAdded Number of entries added during the last fetch
+     */
     public function nextFetch(Feed &$feed, int $nbEntriesAdded): void
     {
         // On détermine l'interval et la prochaine date de fetch

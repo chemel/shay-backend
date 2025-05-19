@@ -12,21 +12,34 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Command to import feeds from an OPML file
+ * 
+ * This command allows importing RSS/Atom feeds and their categories
+ * from an OPML file format.
+ */
 #[AsCommand(
     name: 'app:import-opml',
     description: 'Import an OPML file',
 )]
 class ImportOpmlCommand extends Command
 {
-    private $em;
-
-    public function __construct(EntityManagerInterface $em)
-    {
-        $this->em = $em;
-
+    /**
+     * Command constructor
+     * 
+     * @param EntityManagerInterface $em The Doctrine entity manager
+     */
+    public function __construct(
+        private readonly EntityManagerInterface $em
+    ) {
         parent::__construct();
     }
 
+    /**
+     * Configures the command arguments
+     * 
+     * Adds a required 'filename' argument for the OPML file to import
+     */
     protected function configure(): void
     {
         $this
@@ -34,6 +47,22 @@ class ImportOpmlCommand extends Command
         ;
     }
 
+    /**
+     * Executes the command
+     * 
+     * The command performs the following steps:
+     * 1. Validates the input file exists
+     * 2. Parses the OPML XML file
+     * 3. For each category in the OPML:
+     *    - Creates or retrieves the category
+     *    - Processes all feeds within the category
+     *    - Creates new feeds if they don't exist
+     * 4. Saves all changes to the database
+     * 
+     * @param InputInterface $input The command input
+     * @param OutputInterface $output The command output
+     * @return int Command exit code
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
