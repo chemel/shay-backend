@@ -3,9 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\Category;
+use App\Entity\Feed;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Feed;
 
 class AppFixtures extends Fixture
 {

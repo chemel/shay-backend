@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\CategoryRepository;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     operations: [
         new GetCollection(uriTemplate: '/categories'),
     ],
-    order: ["name" => "ASC"],
+    order: ['name' => 'ASC'],
     paginationEnabled: false,
     normalizationContext: ['groups' => ['read']]
 )]

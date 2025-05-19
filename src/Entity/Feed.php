@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\FeedRepository;
-use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
-use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use App\Repository\FeedRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,9 +18,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(uriTemplate: '/feeds'),
-        new Post(uriTemplate: '/feeds')
+        new Post(uriTemplate: '/feeds'),
     ],
-    order: ["title" => "ASC"],
+    order: ['title' => 'ASC'],
     paginationEnabled: false,
     normalizationContext: ['groups' => ['read']],
 )]
@@ -175,7 +175,7 @@ class Feed
 
     public function incrementErrorCount(): self
     {
-        $this->errorCount++;
+        ++$this->errorCount;
 
         return $this;
     }
@@ -200,7 +200,8 @@ class Feed
     public function getPurgeDate(): \DateTimeInterface
     {
         $purgeDate = new \DateTime();
-        $purgeDate->modify('-' . $this->getPurge() . ' days');
+        $purgeDate->modify('-'.$this->getPurge().' days');
+
         return $purgeDate;
     }
 
@@ -274,7 +275,7 @@ class Feed
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {
-        if($this->getTitle() === null) {
+        if (null === $this->getTitle()) {
             $this->setTitle($this->getUrl());
         }
     }

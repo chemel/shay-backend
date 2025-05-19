@@ -2,19 +2,19 @@
 
 namespace App\Command;
 
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Entity\User;
 
 /**
- * Command to create a new user in the system
- * 
+ * Command to create a new user in the system.
+ *
  * This command provides an interactive way to create a new user
  * by prompting for username and password.
  */
@@ -25,34 +25,35 @@ use App\Entity\User;
 class UserCreateCommand extends Command
 {
     /**
-     * Command constructor
-     * 
-     * @param EntityManagerInterface $em The Doctrine entity manager
+     * Command constructor.
+     *
+     * @param EntityManagerInterface      $em             The Doctrine entity manager
      * @param UserPasswordHasherInterface $passwordHasher The password hasher service
      */
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
         parent::__construct();
     }
 
     /**
      * Configures the command
-     * This command doesn't require any additional configuration
+     * This command doesn't require any additional configuration.
      */
     protected function configure(): void
     {
     }
 
     /**
-     * Executes the command
-     * 
+     * Executes the command.
+     *
      * Prompts for username and password, creates a new user,
      * hashes the password and saves the user to the database
-     * 
-     * @param InputInterface $input The command input
+     *
+     * @param InputInterface  $input  The command input
      * @param OutputInterface $output The command output
+     *
      * @return int Command exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -88,13 +89,13 @@ class UserCreateCommand extends Command
     }
 
     /**
-     * Creates a password question with validation
-     * 
+     * Creates a password question with validation.
+     *
      * Creates an interactive question for password input with the following features:
      * - Hidden input (password is not displayed)
      * - Validation to ensure password is not empty
      * - Maximum 20 attempts
-     * 
+     *
      * @return Question The configured password question
      */
     private function createPasswordQuestion(): Question

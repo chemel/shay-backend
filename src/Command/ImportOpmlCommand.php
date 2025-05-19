@@ -2,19 +2,19 @@
 
 namespace App\Command;
 
-use App\Entity\Feed;
 use App\Entity\Category;
+use App\Entity\Feed;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Command to import feeds from an OPML file
- * 
+ * Command to import feeds from an OPML file.
+ *
  * This command allows importing RSS/Atom feeds and their categories
  * from an OPML file format.
  */
@@ -25,19 +25,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ImportOpmlCommand extends Command
 {
     /**
-     * Command constructor
-     * 
+     * Command constructor.
+     *
      * @param EntityManagerInterface $em The Doctrine entity manager
      */
     public function __construct(
-        private readonly EntityManagerInterface $em
+        private readonly EntityManagerInterface $em,
     ) {
         parent::__construct();
     }
 
     /**
-     * Configures the command arguments
-     * 
+     * Configures the command arguments.
+     *
      * Adds a required 'filename' argument for the OPML file to import
      */
     protected function configure(): void
@@ -48,8 +48,8 @@ class ImportOpmlCommand extends Command
     }
 
     /**
-     * Executes the command
-     * 
+     * Executes the command.
+     *
      * The command performs the following steps:
      * 1. Validates the input file exists
      * 2. Parses the OPML XML file
@@ -58,9 +58,10 @@ class ImportOpmlCommand extends Command
      *    - Processes all feeds within the category
      *    - Creates new feeds if they don't exist
      * 4. Saves all changes to the database
-     * 
-     * @param InputInterface $input The command input
+     *
+     * @param InputInterface  $input  The command input
      * @param OutputInterface $output The command output
+     *
      * @return int Command exit code
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -74,7 +75,7 @@ class ImportOpmlCommand extends Command
         if (!file_exists($filename)) {
             $io->note('The input file do not exist');
         }
-        
+
         // Parse the xml file
         $xml = new \SimpleXMLElement(file_get_contents($filename));
 
@@ -85,20 +86,19 @@ class ImportOpmlCommand extends Command
         $feedCategoryRepository->findAll();
 
         // Foreach Categories
-        foreach($xml->body->outline as $xmlNodeCategory) {
-
+        foreach ($xml->body->outline as $xmlNodeCategory) {
             $attributes = $xmlNodeCategory->attributes();
 
             $categoryTitle = trim((string) $attributes->title);
 
             $output->writeLn('');
-            $output->writeLn('Category : ' . $categoryTitle);
+            $output->writeLn('Category : '.$categoryTitle);
 
             // Check if category exist
             $category = $feedCategoryRepository->findOneBy(['name' => $categoryTitle]);
 
             // If not exist, create it !
-            if(!$category) {
+            if (!$category) {
                 $category = new Category();
                 $category->setName($categoryTitle);
                 $this->em->persist($category);
@@ -106,7 +106,7 @@ class ImportOpmlCommand extends Command
             }
 
             // Foreach Feeds
-            foreach($xmlNodeCategory->outline as $xmlNodeFeed) {
+            foreach ($xmlNodeCategory->outline as $xmlNodeFeed) {
                 $attributes = $xmlNodeFeed->attributes();
 
                 // The url of the feed
@@ -115,7 +115,7 @@ class ImportOpmlCommand extends Command
                 // Check if the Feed exist in the database
                 $exist = $feedRepository->findOneBy(['url' => $url]);
 
-                if(!$exist) {
+                if (!$exist) {
                     $output->writeLn($url);
 
                     // Create the Feed
@@ -124,7 +124,7 @@ class ImportOpmlCommand extends Command
                     $feed->setUrl($url);
 
                     $feed->setCategory($category);
-    
+
                     // Save the Feed in database
                     $this->em->persist($feed);
                 }

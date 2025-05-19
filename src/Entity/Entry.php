@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use App\Repository\EntryRepository;
+use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use App\Repository\EntryRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(uriTemplate: '/entries/{id}', requirements: ['id' => '\d+']),
         new Patch(uriTemplate: '/entries/{id}'),
     ],
-    order: ["date" => "DESC"],
+    order: ['date' => 'DESC'],
     normalizationContext: ['groups' => ['read']]
 )]
 #[ApiFilter(NumericFilter::class, properties: ['feed.id', 'feed.category.id'])]

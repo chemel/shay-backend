@@ -3,11 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Entry;
+use App\Entity\Feed;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Feed;
 
 /**
  * @method Entry|null find($id, $lockMode = null, $lockVersion = null)
@@ -46,9 +46,6 @@ class EntryRepository extends ServiceEntityRepository
         }
     }
 
-    /**
-     * @return bool
-     */
     public function exists(Feed $feed, $hash): bool
     {
         return $this->createQueryBuilder('e')
