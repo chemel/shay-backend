@@ -8,7 +8,7 @@ Follow these steps in order to set up the development environment:
 
 ### 1. Clone the repository
 ```bash
-git clone [repository-url]
+git clone https://github.com/chemel/shay-backend.git
 cd shay-backend
 ```
 
@@ -64,3 +64,31 @@ The application should now be running at `http://localhost:8000`
 - Docker and Docker Compose must be installed on your system
 - Composer is required for dependency management
 - The Symfony CLI should be installed for the development server
+
+## Debugging and API Testing
+
+You can use the following curl commands to test the API endpoints:
+
+### Authentication
+
+To obtain a JWT token:
+```bash
+curl -s -X POST \
+  -H 'Accept: application/json' \
+  -H 'Content-Type: application/json' \
+  --data '{"username":"admin","password":"admin"}' \
+  http://127.0.0.1:8000/api/login
+```
+
+Note: Replace `admin`/`admin` with your actual credentials.
+
+### Testing API Endpoints
+
+To fetch the list of feeds (authenticated request):
+```bash
+curl -H 'Accept: application/json' \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  http://127.0.0.1:8000/api/feeds
+```
+
+Note: Replace `YOUR_JWT_TOKEN` with the token received from the authentication request.
