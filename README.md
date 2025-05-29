@@ -1,37 +1,66 @@
-# newsreader-backend
-RSS News Reader back-end build with Symfony
+# Shay
 
-# Installation
+Shay is a modern RSS reader built with Angular and Symfony.
 
-```console
-# Installation des vendors
+## Development Installation Guide
+
+Follow these steps in order to set up the development environment:
+
+### 1. Clone the repository
+```bash
+git clone [repository-url]
+cd shay-backend
+```
+
+### 2. Install Dependencies
+Install PHP dependencies using Composer:
+```bash
 composer install
+```
 
-# Création de la base de données
+### 3. Start Docker Services
+Launch the required Docker containers:
+```bash
+docker compose up -d
+```
+
+### 4. Database Setup
+Execute the following commands to set up and populate the database:
+
+```bash
+# Create the database
 php bin/console doctrine:database:create
-php bin/console doctrine:schema:update --force
-php bin/console doctrine:fixtures:load
-php bin/console app:feed:fetch
-php bin/console app:user-create
 
-# Création d'une paire de clés pour JWT
+# Update database schema
+php bin/console doctrine:schema:update --force
+
+# Load initial data fixtures
+php bin/console doctrine:fixtures:load
+
+# Fetch initial RSS feeds
+php bin/console app:feed:fetch
+
+# Create a user account
+php bin/console app:user-create
+```
+
+### 5. JWT Configuration
+Generate JWT keypair for authentication:
+```bash
 php bin/console lexik:jwt:generate-keypair
 ```
 
-# Usage
-
-## Get a JWT Token
-
-```console
-curl -s -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' --data '{"username":"admin","password":"admin"}' http://127.0.0.1:8000/api/authentication_token
+### 6. Start Development Server
+Launch the Symfony development server:
+```bash
+symfony serve
 ```
 
-Replace admin / admin with your credentials
+The application should now be running at `http://localhost:8000`
 
-## Make a API request to get feeds
+## Additional Information
 
-```console
-curl -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" http://127.0.0.1:8000/api/feeds
-```
-
-Replace ${TOKEN} with the JWT token
+- Make sure you have PHP 8.x installed
+- Docker and Docker Compose must be installed on your system
+- Composer is required for dependency management
+- The Symfony CLI should be installed for the development server
