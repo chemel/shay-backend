@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\FeedRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(uriTemplate: '/feeds'),
         new Post(uriTemplate: '/feeds'),
+        new Delete(uriTemplate: '/feeds/{id}')
     ],
     order: ['title' => 'ASC'],
     paginationEnabled: false,
