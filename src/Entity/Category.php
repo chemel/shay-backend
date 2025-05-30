@@ -4,17 +4,25 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
     operations: [
         new GetCollection(uriTemplate: '/categories'),
+        new Post(
+            uriTemplate: '/categories',
+            denormalizationContext: ['groups' => ['category:write']]
+        ),
+        new Delete(uriTemplate: '/categories/{id}')
     ],
     order: ['name' => 'ASC'],
     paginationEnabled: false,
@@ -29,7 +37,14 @@ class Category
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
-    #[Groups('read')]
+    #[Groups(['read', 'category:write'])]
+    #[Assert\NotBlank(message: "The name cannot be empty")]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: "The name must be at least {{ limit }} characters long",
+        maxMessage: "The name cannot be longer than {{ limit }} characters"
+    )]
     private $name;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Feed::class)]
