@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -28,6 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationEnabled: false,
     normalizationContext: ['groups' => ['read']]
 )]
+#[UniqueEntity('name', message: "The name must be unique")]
 class Category
 {
     #[ORM\Id]
@@ -36,7 +38,7 @@ class Category
     #[Groups('read')]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups(['read', 'category:write'])]
     #[Assert\NotBlank(message: "The name cannot be empty")]
     #[Assert\Length(

@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -26,6 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     paginationEnabled: false,
     normalizationContext: ['groups' => ['read']],
 )]
+#[UniqueEntity('url', message: "The URL must be unique")]
 class Feed
 {
     #[ORM\Id]
@@ -34,10 +36,10 @@ class Feed
     #[Groups('read')]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups('read')]
-    #[Assert\Url(message: "L'URL '{{ value }}' n'est pas une URL valide")]
-    #[Assert\NotBlank(message: "L'URL ne peut pas être vide")]
+    #[Assert\Url(message: "The URL '{{ value }}' is not a valid URL")]
+    #[Assert\NotBlank(message: "The URL cannot be empty")]
     private $url;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
