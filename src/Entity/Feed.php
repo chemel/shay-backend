@@ -42,23 +42,23 @@ class Feed
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('feed:read')]
-    private ?Uuid $id;
+    private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups('feed:read')]
     #[Assert\Url(message: "The URL '{{ value }}' is not a valid URL")]
     #[Assert\NotBlank(message: "The URL cannot be empty")]
-    private $url;
+    private ?string $url = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Groups('feed:read')]
-    private $title;
+    private ?string $title = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    private $enabled = true;
+    private bool $enabled = true;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 5])]
-    private $fetchEvery = 5;
+    private int $fetchEvery = 5;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fetchAt = null;
@@ -67,24 +67,24 @@ class Feed
     private ?\DateTimeInterface $fetchedAt = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
-    private $errorCount = 0;
+    private int $errorCount = 0;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private $errorMessage;
+    private ?string $errorMessage = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 30])]
-    private $purge = 30;
+    private int $purge = 30;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\OneToMany(mappedBy: 'feed', targetEntity: Entry::class, orphanRemoval: true)]
-    private $entries;
+    private Collection $entries;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'feeds')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups('feed:read')]
-    private $category;
+    private ?Category $category = null;
 
     public function __construct()
     {

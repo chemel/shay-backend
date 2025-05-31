@@ -53,22 +53,22 @@ class Entry
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups('entry:read')]
-    private $permalink;
+    private ?string $permalink = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Groups('entry:read')]
-    private $title;
+    private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups('entry:read')]
-    private $content;
+    private ?string $content = null;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
-    private $hash;
+    private ?string $hash = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
     #[Groups('entry:read')]
-    private $readed = false;
+    private bool $readed = false;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
