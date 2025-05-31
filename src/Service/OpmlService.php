@@ -27,6 +27,97 @@ class OpmlService
     }
 
     /**
+     * Import an OPML file into the database.
+     * 
+     * This method processes an OPML file and imports its contents into the database:
+     * - Reads the OPML XML file
+     * - Creates or retrieves categories based on outline elements
+     * - Creates new feeds under their respective categories
+     * - Skips existing feeds (based on URL)
+     * - Handles the database transactions
+     * 
+     * Expected OPML structure:
+     * <opml version="1.0">
+     *   <body>
+     *     <outline text="Category Name" title="Category Name">
+     *       <outline type="rss" text="Feed Title" title="Feed Title"
+     *                xmlUrl="http://feed.url" htmlUrl="http://feed.url"/>
+     *     </outline>
+     *   </body>
+     * </opml>
+     * 
+     * @param string $filename The path to the OPML file to import
+     * @return int The number of new feeds imported (excluding existing ones)
+     * 
+     * @throws \RuntimeException If the file cannot be read or parsed
+     * @throws \SimpleXMLException If the XML is malformed
+     * 
+     * @example
+     * $opmlService = new OpmlService($entityManager);
+     * $importedCount = $opmlService->import('feeds.opml');
+     * echo sprintf('%d feeds have been imported', $importedCount);
+     */
+    public function import(string $filename): int
+    {
+        // Parse the OPML file into a SimpleXMLElement object
+        $xml = new \SimpleXMLElement(file_get_contents($filename));
+
+        // Get repositories for database operations
+        $feedRepository = $this->em->getRepository(Feed::class);
+        $feedCategoryRepository = $this->em->getRepository(Category::class);
+        // Pre-load all categories to optimize subsequent database queries
+        $feedCategoryRepository->findAll();
+
+        // Counter to track the number of new feeds imported
+        $counter = 0;
+
+        // Iterate through each category outline in the OPML
+        foreach ($xml->body->outline as $xmlNodeCategory) {
+            // Extract category attributes from the XML node
+            $attributes = $xmlNodeCategory->attributes();
+            $categoryTitle = trim((string) $attributes->title);
+            
+            // Try to find existing category or create a new one
+            $category = $feedCategoryRepository->findOneBy(['name' => $categoryTitle]);
+
+            if (!$category) {
+                // Create new category if it doesn't exist
+                $category = new Category();
+                $category->setName($categoryTitle);
+                $this->em->persist($category);
+                $this->em->flush();
+            }
+
+            // Process all feeds within the current category
+            foreach ($xmlNodeCategory->outline as $xmlNodeFeed) {
+                $attributes = $xmlNodeFeed->attributes();
+                $url = (string) $attributes->xmlUrl;
+                
+                // Check if feed already exists to avoid duplicates
+                $exist = $feedRepository->findOneBy(['url' => $url]);
+
+                if (!$exist) {
+                    // Create new feed only if it doesn't exist
+                    $feed = new Feed();
+                    $feed->setTitle((string) $attributes->title);
+                    $feed->setUrl($url);
+                    $feed->setCategory($category);
+                    $this->em->persist($feed);
+
+                    // Increment counter for new feeds
+                    $counter++;
+                }
+            }
+
+            // Flush changes to database after processing each category
+            $this->em->flush();
+        }
+
+        // Return the total number of new feeds imported
+        return $counter;
+    }
+
+    /**
      * Exports all RSS feeds organized by categories to OPML format.
      * 
      * Creates an OPML document with the following structure:

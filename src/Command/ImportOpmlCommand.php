@@ -2,9 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\Category;
-use App\Entity\Feed;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\OpmlService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,10 +11,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Command to import feeds from an OPML file.
- *
- * This command allows importing RSS/Atom feeds and their categories
- * from an OPML file format.
+ * Command to import RSS feeds from an OPML file.
+ * 
+ * This command provides a CLI interface to import RSS/Atom feeds and their categories
+ * from an OPML (Outline Processor Markup Language) file. It uses the OpmlService
+ * to process the file and store the feeds in the database.
+ * 
+ * Usage:
+ *     php bin/console app:import-opml path/to/file.opml
+ * 
+ * The command will:
+ * - Validate the existence of the input file
+ * - Process the OPML file through OpmlService
+ * - Create categories and feeds as needed
+ * - Display the number of imported feeds
  */
 #[AsCommand(
     name: 'app:import-opml',
@@ -25,115 +33,57 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ImportOpmlCommand extends Command
 {
     /**
-     * Command constructor.
-     *
-     * @param EntityManagerInterface $em The Doctrine entity manager
+     * Constructor for the ImportOpmlCommand.
+     * 
+     * @param OpmlService $opmlService Service responsible for OPML file processing
      */
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly OpmlService $opmlService,
     ) {
         parent::__construct();
     }
 
     /**
-     * Configures the command arguments.
-     *
-     * Adds a required 'filename' argument for the OPML file to import
+     * Configures the command.
+     * 
+     * Adds a required 'filename' argument that specifies the path to the OPML
+     * file that should be imported.
      */
     protected function configure(): void
     {
-        $this
-            ->addArgument('filename', InputArgument::REQUIRED, 'The OPML file to import')
-        ;
+        $this->addArgument('filename', InputArgument::REQUIRED, 'The OPML file to import');
     }
 
     /**
      * Executes the command.
-     *
-     * The command performs the following steps:
-     * 1. Validates the input file exists
-     * 2. Parses the OPML XML file
-     * 3. For each category in the OPML:
-     *    - Creates or retrieves the category
-     *    - Processes all feeds within the category
-     *    - Creates new feeds if they don't exist
-     * 4. Saves all changes to the database
-     *
-     * @param InputInterface  $input  The command input
-     * @param OutputInterface $output The command output
-     *
-     * @return int Command exit code
+     * 
+     * This method:
+     * 1. Validates the existence of the input file
+     * 2. Processes the OPML file using OpmlService
+     * 3. Displays the results to the user
+     * 
+     * @param InputInterface $input Command input interface
+     * @param OutputInterface $output Command output interface
+     * 
+     * @return int Command exit code (0 for success, non-zero for failure)
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // Create Symfony Style helper for better CLI output
         $io = new SymfonyStyle($input, $output);
-
-        // The file to import
         $filename = $input->getArgument('filename');
 
-        // Check if the file exist
+        // Validate file existence
         if (!file_exists($filename)) {
-            $io->note('The input file do not exist');
+            $io->error('The input file does not exist');
+            return Command::FAILURE;
         }
 
-        // Parse the xml file
-        $xml = new \SimpleXMLElement(file_get_contents($filename));
+        // Process the OPML file and get number of imported feeds
+        $counter = $this->opmlService->import($filename);
 
-        // Get Feed & Category repository
-        $feedRepository = $this->em->getRepository(Feed::class);
-        $feedCategoryRepository = $this->em->getRepository(Category::class);
-        // Caching all categories
-        $feedCategoryRepository->findAll();
-
-        // Foreach Categories
-        foreach ($xml->body->outline as $xmlNodeCategory) {
-            $attributes = $xmlNodeCategory->attributes();
-
-            $categoryTitle = trim((string) $attributes->title);
-
-            $output->writeLn('');
-            $output->writeLn('Category : '.$categoryTitle);
-
-            // Check if category exist
-            $category = $feedCategoryRepository->findOneBy(['name' => $categoryTitle]);
-
-            // If not exist, create it !
-            if (!$category) {
-                $category = new Category();
-                $category->setName($categoryTitle);
-                $this->em->persist($category);
-                $this->em->flush();
-            }
-
-            // Foreach Feeds
-            foreach ($xmlNodeCategory->outline as $xmlNodeFeed) {
-                $attributes = $xmlNodeFeed->attributes();
-
-                // The url of the feed
-                $url = (string) $attributes->xmlUrl;
-
-                // Check if the Feed exist in the database
-                $exist = $feedRepository->findOneBy(['url' => $url]);
-
-                if (!$exist) {
-                    $output->writeLn($url);
-
-                    // Create the Feed
-                    $feed = new Feed();
-                    $feed->setTitle((string) $attributes->title);
-                    $feed->setUrl($url);
-
-                    $feed->setCategory($category);
-
-                    // Save the Feed in database
-                    $this->em->persist($feed);
-                }
-            }
-
-            $this->em->flush();
-        }
-
-        $io->success('The file has been imported.');
+        // Display success message with import count
+        $io->success($counter.' feeds have been imported.');
 
         return Command::SUCCESS;
     }
