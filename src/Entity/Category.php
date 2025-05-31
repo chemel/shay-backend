@@ -17,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -28,6 +29,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
         ),
         new Delete(
             uriTemplate: '/categories/{id}',
+            requirements: ['id' => Requirement::UUID_V6]
         )
     ],
     order: ['name' => 'ASC'],

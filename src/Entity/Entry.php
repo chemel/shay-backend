@@ -15,14 +15,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource(
     operations: [
         new GetCollection(uriTemplate: '/entries'),
-        new Get(uriTemplate: '/entries/{id}'),
-        new Patch(uriTemplate: '/entries/{id}'),
+        new Get(uriTemplate: '/entries/{id}', requirements: ['id' => Requirement::UUID_V6]),
+        new Patch(uriTemplate: '/entries/{id}', requirements: ['id' => Requirement::UUID_V6]),
     ],
     order: ['date' => 'DESC'],
     normalizationContext: ['groups' => ['read']]

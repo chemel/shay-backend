@@ -17,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -26,6 +27,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
         new Post(uriTemplate: '/feeds'),
         new Delete(
             uriTemplate: '/feeds/{id}',
+            requirements: ['id' => Requirement::UUID_V6]
         )
     ],
     order: ['title' => 'ASC'],
