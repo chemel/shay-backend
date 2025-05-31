@@ -13,6 +13,8 @@ use App\State\UserProvider;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\OpenApi\Model;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -22,7 +24,20 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
             name: 'api_users_whoami',
             uriTemplate: '/users/whoami',
             paginationEnabled: false,
-            provider: UserProvider::class
+            provider: UserProvider::class,
+            description: 'Retrieves the currently authenticated user',
+            openapi: new Model\Operation(
+                summary: 'Retrieves the current user information',
+                description: 'Retrieves detailed information about the currently authenticated user.',
+                responses: [
+                    '200' => [
+                        'description' => 'User information retrieved successfully'
+                    ],
+                    '401' => [
+                        'description' => 'Authentication required'
+                    ]
+                ]
+            )
         )
     ],
     normalizationContext: ['groups' => ['user:read']]
@@ -36,10 +51,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Uuid $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[ApiProperty(
+        description: 'The username of the user',
+        example: 'john.doe'
+    )]
     #[Groups(['user:read'])]
     private ?string $username = null;
 
     #[ORM\Column]
+    #[ApiProperty(
+        description: 'The roles of the user',
+        example: ['ROLE_USER', 'ROLE_ADMIN'],
+        openapiContext: [
+            'type' => 'array',
+            'items' => [
+                'type' => 'string',
+                'enum' => ['ROLE_USER', 'ROLE_ADMIN']
+            ]
+        ]
+    )]
     #[Groups(['user:read'])]
     private array $roles = [];
 
