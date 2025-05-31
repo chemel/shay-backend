@@ -32,7 +32,7 @@ use Symfony\Component\Routing\Requirement\Requirement;
     ],
     order: ['title' => 'ASC'],
     paginationEnabled: false,
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['feed:read']],
 )]
 #[UniqueEntity('url', message: "The URL must be unique")]
 class Feed
@@ -41,17 +41,17 @@ class Feed
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups('read')]
+    #[Groups('feed:read')]
     private ?Uuid $id;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
-    #[Groups('read')]
+    #[Groups('feed:read')]
     #[Assert\Url(message: "The URL '{{ value }}' is not a valid URL")]
     #[Assert\NotBlank(message: "The URL cannot be empty")]
     private $url;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    #[Groups('read')]
+    #[Groups('feed:read')]
     private $title;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -83,7 +83,7 @@ class Feed
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'feeds')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read')]
+    #[Groups('feed:read')]
     private $category;
 
     public function __construct()

@@ -22,11 +22,17 @@ use Symfony\Component\Routing\Requirement\Requirement;
 #[ApiResource(
     operations: [
         new GetCollection(uriTemplate: '/entries'),
-        new Get(uriTemplate: '/entries/{id}', requirements: ['id' => Requirement::UUID_V6]),
-        new Patch(uriTemplate: '/entries/{id}', requirements: ['id' => Requirement::UUID_V6]),
+        new Get(
+            uriTemplate: '/entries/{id}',
+            requirements: ['id' => Requirement::UUID_V6]
+        ),
+        new Patch(
+            uriTemplate: '/entries/{id}',
+            requirements: ['id' => Requirement::UUID_V6]
+        ),
     ],
     order: ['date' => 'DESC'],
-    normalizationContext: ['groups' => ['read']]
+    normalizationContext: ['groups' => ['entry:read']]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'feed.id' => 'exact',
@@ -38,30 +44,30 @@ class Entry
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private $permalink;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private $title;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private $content;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
     private $hash;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    #[Groups('read')]
+    #[Groups('entry:read')]
     private $readed = false;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

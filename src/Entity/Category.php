@@ -34,7 +34,7 @@ use Symfony\Component\Routing\Requirement\Requirement;
     ],
     order: ['name' => 'ASC'],
     paginationEnabled: false,
-    normalizationContext: ['groups' => ['read']]
+    normalizationContext: ['groups' => ['category:read']]
 )]
 #[UniqueEntity('name', message: "The name must be unique")]
 class Category
@@ -43,11 +43,11 @@ class Category
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups('read')]
+    #[Groups('category:read')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
-    #[Groups(['read', 'category:write'])]
+    #[Groups(['category:read', 'category:write'])]
     #[Assert\NotBlank(message: "The name cannot be empty")]
     #[Assert\Length(
         min: 2,
