@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Doctrine\Orm\Filter\NumericFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
@@ -12,26 +12,33 @@ use App\Repository\EntryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: EntryRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource(
     operations: [
         new GetCollection(uriTemplate: '/entries'),
-        new Get(uriTemplate: '/entries/{id}', requirements: ['id' => '\d+']),
+        new Get(uriTemplate: '/entries/{id}'),
         new Patch(uriTemplate: '/entries/{id}'),
     ],
     order: ['date' => 'DESC'],
     normalizationContext: ['groups' => ['read']]
 )]
-#[ApiFilter(NumericFilter::class, properties: ['feed.id', 'feed.category.id'])]
+#[ApiFilter(SearchFilter::class, properties: [
+    'feed.id' => 'exact',
+    'feed.category.id' => 'exact'
+])]
 class Entry
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('read')]
-    private $id;
+    private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups('read')]
@@ -61,9 +68,9 @@ class Entry
 
     #[ORM\ManyToOne(targetEntity: Feed::class, inversedBy: 'entries')]
     #[ORM\JoinColumn(nullable: false)]
-    private $feed;
+    private ?Feed $feed = null;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

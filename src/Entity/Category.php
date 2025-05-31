@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
@@ -23,7 +26,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             uriTemplate: '/categories',
             denormalizationContext: ['groups' => ['category:write']]
         ),
-        new Delete(uriTemplate: '/categories/{id}')
+        new Delete(
+            uriTemplate: '/categories/{id}',
+        )
     ],
     order: ['name' => 'ASC'],
     paginationEnabled: false,
@@ -33,10 +38,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Category
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('read')]
-    private $id;
+    private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups(['read', 'category:write'])]
@@ -47,17 +53,17 @@ class Category
         minMessage: "The name must be at least {{ limit }} characters long",
         maxMessage: "The name cannot be longer than {{ limit }} characters"
     )]
-    private $name;
+    private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Feed::class)]
-    private $feeds;
-
+    private Collection $feeds;
+    
     public function __construct()
     {
         $this->feeds = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

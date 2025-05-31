@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
@@ -21,7 +24,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     operations: [
         new GetCollection(uriTemplate: '/feeds'),
         new Post(uriTemplate: '/feeds'),
-        new Delete(uriTemplate: '/feeds/{id}')
+        new Delete(
+            uriTemplate: '/feeds/{id}',
+        )
     ],
     order: ['title' => 'ASC'],
     paginationEnabled: false,
@@ -31,10 +36,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Feed
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('read')]
-    private $id;
+    private ?Uuid $id;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups('read')]
@@ -83,11 +89,11 @@ class Feed
         $this->entries = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
-
+    
     public function getUrl(): ?string
     {
         return $this->url;
