@@ -18,21 +18,88 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Routing\Requirement\Requirement;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\OpenApi\Model;
 
 #[ORM\Entity(repositoryClass: FeedRepository::class)]
 #[ORM\HasLifecycleCallbacks()]
 #[ApiResource(
     operations: [
-        new GetCollection(uriTemplate: '/feeds'),
-        new Post(uriTemplate: '/feeds'),
+        new GetCollection(
+            uriTemplate: '/feeds',
+            description: 'Retrieves the collection of RSS Feeds',
+            openapi: new Model\Operation(
+                summary: 'Retrieves all RSS feeds',
+                description: 'Retrieves the collection of RSS Feeds ordered by title',
+                responses: [
+                    '200' => [
+                        'description' => 'RSS Feeds collection retrieved successfully'
+                    ]
+                ]
+            )
+        ),
+        new Post(
+            uriTemplate: '/feeds',
+            description: 'Creates a new RSS Feed',
+            openapi: new Model\Operation(
+                summary: 'Creates a new RSS Feed',
+                description: 'Creates a new RSS Feed with the provided URL and category',
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'url' => [
+                                        'type' => 'string',
+                                        'format' => 'url',
+                                        'example' => 'https://example.com/feed.xml'
+                                    ],
+                                    'category' => [
+                                        'type' => 'string',
+                                        'format' => 'uuid',
+                                        'example' => '00000000-0000-0000-0000-000000000000'
+                                    ]
+                                ],
+                                'required' => ['url', 'category']
+                            ]
+                        ]
+                    ])
+                ),
+                responses: [
+                    '201' => [
+                        'description' => 'RSS Feed created successfully'
+                    ],
+                    '400' => [
+                        'description' => 'Invalid input'
+                    ],
+                    '422' => [
+                        'description' => 'Unprocessable entity'
+                    ]
+                ]
+            )
+        ),
         new Delete(
             uriTemplate: '/feeds/{id}',
-            requirements: ['id' => Requirement::UUID_V6]
+            requirements: ['id' => Requirement::UUID_V6],
+            description: 'Removes a RSS Feed',
+            openapi: new Model\Operation(
+                summary: 'Deletes a RSS Feed',
+                description: 'Deletes a RSS Feed and all its entries',
+                responses: [
+                    '204' => [
+                        'description' => 'RSS Feed deleted successfully'
+                    ],
+                    '404' => [
+                        'description' => 'RSS Feed not found'
+                    ]
+                ]
+            )
         )
     ],
     order: ['title' => 'ASC'],
     paginationEnabled: false,
-    normalizationContext: ['groups' => ['feed:read']],
+    normalizationContext: ['groups' => ['feed:read', 'category:read']],
 )]
 #[UniqueEntity('url', message: "The URL must be unique")]
 class Feed
@@ -42,22 +109,39 @@ class Feed
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('feed:read')]
+    #[ApiProperty(description: 'The unique identifier of the RSS Feed')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
     #[Groups('feed:read')]
     #[Assert\Url(message: "The URL '{{ value }}' is not a valid URL")]
     #[Assert\NotBlank(message: "The URL cannot be empty")]
+    #[ApiProperty(
+        description: 'The URL of the RSS Feed',
+        example: 'https://example.com/feed.xml'
+    )]
     private ?string $url = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
     #[Groups('feed:read')]
+    #[ApiProperty(
+        description: 'The title of the RSS Feed',
+        example: 'Example Blog Feed'
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::BOOLEAN)]
+    #[ApiProperty(
+        description: 'Whether the feed is enabled for fetching',
+        default: true
+    )]
     private bool $enabled = true;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 5])]
+    #[ApiProperty(
+        description: 'How often to fetch the feed (in minutes)',
+        default: 5
+    )]
     private int $fetchEvery = 5;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

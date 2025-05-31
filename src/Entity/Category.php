@@ -18,18 +18,83 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Routing\Requirement\Requirement;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\OpenApi\Model;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(uriTemplate: '/categories'),
+        new GetCollection(
+            uriTemplate: '/categories',
+            description: 'Retrieves the collection of RSS Feed categories',
+            openapi: new Model\Operation(
+                summary: 'Gets all categories',
+                description: 'Retrieves the collection of RSS Feed categories ordered by name',
+                responses: [
+                    '200' => [
+                        'description' => 'Categories collection retrieved successfully'
+                    ]
+                ]
+            )
+        ),
         new Post(
             uriTemplate: '/categories',
-            denormalizationContext: ['groups' => ['category:write']]
+            denormalizationContext: ['groups' => ['category:write']],
+            description: 'Creates a new category',
+            openapi: new Model\Operation(
+                summary: 'Creates a new category',
+                description: 'Creates a new category for organizing RSS Feeds',
+                requestBody: new Model\RequestBody(
+                    content: new \ArrayObject([
+                        'application/json' => [
+                            'schema' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'name' => [
+                                        'type' => 'string',
+                                        'description' => 'The name of the category',
+                                        'example' => 'Technology',
+                                        'minLength' => 2,
+                                        'maxLength' => 255
+                                    ]
+                                ],
+                                'required' => ['name']
+                            ]
+                        ]
+                    ])
+                ),
+                responses: [
+                    '201' => [
+                        'description' => 'Category created successfully'
+                    ],
+                    '400' => [
+                        'description' => 'Invalid input'
+                    ],
+                    '422' => [
+                        'description' => 'Unprocessable entity (validation failed)'
+                    ]
+                ]
+            )
         ),
         new Delete(
             uriTemplate: '/categories/{id}',
-            requirements: ['id' => Requirement::UUID_V6]
+            requirements: ['id' => Requirement::UUID_V6],
+            description: 'Removes a category',
+            openapi: new Model\Operation(
+                summary: 'Deletes a category',
+                description: 'Deletes a category and all its associated feeds',
+                responses: [
+                    '204' => [
+                        'description' => 'Category deleted successfully'
+                    ],
+                    '404' => [
+                        'description' => 'Category not found'
+                    ],
+                    '409' => [
+                        'description' => 'Conflict: Category still has associated feeds'
+                    ]
+                ]
+            )
         )
     ],
     order: ['name' => 'ASC'],
@@ -44,6 +109,10 @@ class Category
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('category:read')]
+    #[ApiProperty(
+        description: 'The unique identifier of the category',
+        example: '01234567-89ab-cdef-0123-456789abcdef'
+    )]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]
@@ -55,9 +124,19 @@ class Category
         minMessage: "The name must be at least {{ limit }} characters long",
         maxMessage: "The name cannot be longer than {{ limit }} characters"
     )]
+    #[ApiProperty(
+        description: 'The name of the category',
+        example: 'Technology',
+        required: true
+    )]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Feed::class)]
+    #[ApiProperty(
+        description: 'The RSS feeds in this category',
+        readable: false,
+        writable: false
+    )]
     private Collection $feeds;
     
     public function __construct()
