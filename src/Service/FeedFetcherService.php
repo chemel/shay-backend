@@ -61,7 +61,7 @@ class FeedFetcherService
             }
 
             // On check si la date du post est pas plus ancienne que la date de purge du feed
-            $purgeDate = $feed->getPurgeDate();
+            $purgeDate = $feed->getPurgeAfterDaysDate();
             if ($entry->getDate() < $purgeDate) {
                 continue;
             }

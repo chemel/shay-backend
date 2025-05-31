@@ -94,7 +94,7 @@ class EntryRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->delete()
             ->where('e.date < :date')
-            ->setParameter('date', $feed->getPurgeDate())
+            ->setParameter('date', $feed->getPurgeAfterDaysDate())
             ->getQuery()
             ->getResult()
         ;

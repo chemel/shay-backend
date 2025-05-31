@@ -157,7 +157,7 @@ class Feed
     private ?string $errorMessage = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 30])]
-    private int $purge = 30;
+    private int $purgeAfterDays = 30;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $createdAt = null;
@@ -288,22 +288,22 @@ class Feed
         return $this;
     }
 
-    public function getPurge(): ?int
+    public function getPurgeAfterDays(): ?int
     {
-        return $this->purge;
+        return $this->purgeAfterDays;
     }
 
-    public function getPurgeDate(): \DateTimeInterface
+    public function getPurgeAfterDaysDate(): \DateTimeInterface
     {
         $purgeDate = new \DateTime();
-        $purgeDate->modify('-'.$this->getPurge().' days');
+        $purgeDate->modify('-'.$this->getPurgeAfterDays().' days');
 
         return $purgeDate;
     }
 
-    public function setPurge(int $purge): static
+    public function setPurgeAfterDays(int $purgeAfterDays): static
     {
-        $this->purge = $purge;
+        $this->purgeAfterDays = $purgeAfterDays;
 
         return $this;
     }
