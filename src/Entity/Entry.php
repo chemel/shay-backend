@@ -91,7 +91,10 @@ use ApiPlatform\OpenApi\Model;
         ),
     ],
     order: ['date' => 'DESC'],
-    normalizationContext: ['groups' => ['entry:read']]
+    normalizationContext: [
+        'skip_null_values' => false,
+        'groups' => ['entry:read']
+    ]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'feed.id' => 'exact',
