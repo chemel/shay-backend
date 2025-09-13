@@ -76,7 +76,7 @@
         ]
     },
     "friendsofphp/php-cs-fixer": {
-        "version": "3.75",
+        "version": "3.87",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -264,19 +264,16 @@
             "config/packages/notifier.yaml"
         ]
     },
-    "symfony/phpunit-bridge": {
-        "version": "7.0",
+    "symfony/property-info": {
+        "version": "7.3",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.3",
-            "ref": "a411a0480041243d97382cac7984f7dce7813c08"
+            "version": "7.3",
+            "ref": "dae70df71978ae9226ae915ffd5fad817f5ca1f7"
         },
         "files": [
-            ".env.test",
-            "bin/phpunit",
-            "phpunit.xml.dist",
-            "tests/bootstrap.php"
+            "config/packages/property_info.yaml"
         ]
     },
     "symfony/routing": {
