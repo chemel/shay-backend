@@ -49,6 +49,10 @@ class FeedFetcherService
             return false;
         }
 
+        // Update feed title
+        $feed->setTitle($this->simplePie->get_title());
+
+        // Get feed items
         $items = $this->simplePie->get_items();
         $nbEntriesAdded = 0;
 
