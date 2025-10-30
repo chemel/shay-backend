@@ -30,7 +30,7 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Gets all RSS feed entries',
                 description: 'Retrieves the collection of RSS Feed entries ordered by date',
                 responses: [
-                    '200' => new Model\Response(
+                    200 => new Model\Response(
                         description: 'RSS Feed entries collection retrieved successfully'
                     )
                 ]
@@ -44,10 +44,10 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Gets a RSS feed entry',
                 description: 'Retrieves a specific RSS Feed entry by its UUID',
                 responses: [
-                    '200' => new Model\Response(
+                    200 => new Model\Response(
                         description: 'RSS Feed entry retrieved successfully'
                     ),
-                    '404' => new Model\Response(
+                    404 => new Model\Response(
                         description: 'RSS Feed entry not found'
                     )
                 ]
@@ -77,13 +77,13 @@ use ApiPlatform\OpenApi\Model;
                     ])
                 ),
                 responses: [
-                    '200' => new Model\Response(
+                    200 => new Model\Response(
                         description: 'RSS Feed entry updated successfully'
                     ),
-                    '400' => new Model\Response(
+                    400 => new Model\Response(
                         description: 'Invalid input'
                     ),
-                    '404' => new Model\Response(
+                    404 => new Model\Response(
                         description: 'RSS Feed entry not found'
                     )
                 ]

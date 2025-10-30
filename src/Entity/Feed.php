@@ -32,7 +32,7 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Retrieves all RSS feeds',
                 description: 'Retrieves the collection of RSS Feeds ordered by title',
                 responses: [
-                    '200' => new Model\Response(
+                    200 => new Model\Response(
                         description: 'RSS Feeds collection retrieved successfully'
                     )
                 ]
@@ -67,13 +67,13 @@ use ApiPlatform\OpenApi\Model;
                     ])
                 ),
                 responses: [
-                    '201' => new Model\Response(
+                    201 => new Model\Response(
                         description: 'RSS Feed created successfully'
                     ),
-                    '400' => new Model\Response(
+                    400 => new Model\Response(
                         description: 'Invalid input'
                     ),
-                    '422' => new Model\Response(
+                    422 => new Model\Response(
                         description: 'Unprocessable entity'
                     )
                 ]
@@ -87,10 +87,10 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Deletes a RSS Feed',
                 description: 'Deletes a RSS Feed and all its entries',
                 responses: [
-                    '204' => new Model\Response(
+                    204 => new Model\Response(
                         description: 'RSS Feed deleted successfully'
                     ),
-                    '404' => new Model\Response(
+                    404 => new Model\Response(
                         description: 'RSS Feed not found'
                     )
                 ]
