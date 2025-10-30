@@ -50,7 +50,10 @@ class FeedFetcherService
         }
 
         // Update feed title
-        $feed->setTitle($this->simplePie->get_title());
+        $feedTitle = trim(strip_tags($this->simplePie->get_title()));
+        if (!empty($feedTitle)) {
+            $feed->setTitle($feedTitle);
+        }
 
         // Get feed items
         $items = $this->simplePie->get_items();
