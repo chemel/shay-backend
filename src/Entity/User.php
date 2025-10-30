@@ -30,12 +30,12 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Retrieves the current user information',
                 description: 'Retrieves detailed information about the currently authenticated user.',
                 responses: [
-                    '200' => [
-                        'description' => 'User information retrieved successfully'
-                    ],
-                    '401' => [
-                        'description' => 'Authentication required'
-                    ]
+                    '200' => new Model\Response(
+                        description: 'User information retrieved successfully'
+                    ),
+                    '401' => new Model\Response(
+                        description: 'Authentication required'
+                    )
                 ]
             )
         )

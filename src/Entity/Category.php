@@ -31,9 +31,9 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Gets all categories',
                 description: 'Retrieves the collection of RSS Feed categories ordered by name',
                 responses: [
-                    '200' => [
-                        'description' => 'Categories collection retrieved successfully'
-                    ]
+                    '200' => new Model\Response(
+                        description: 'Categories collection retrieved successfully'
+                    )
                 ]
             )
         ),
@@ -64,15 +64,15 @@ use ApiPlatform\OpenApi\Model;
                     ])
                 ),
                 responses: [
-                    '201' => [
-                        'description' => 'Category created successfully'
-                    ],
-                    '400' => [
-                        'description' => 'Invalid input'
-                    ],
-                    '422' => [
-                        'description' => 'Unprocessable entity (validation failed)'
-                    ]
+                    '201' => new Model\Response(
+                        description: 'Category created successfully'
+                    ),
+                    '400' => new Model\Response(
+                        description: 'Invalid input'
+                    ),
+                    '422' => new Model\Response(
+                        description: 'Unprocessable entity (validation failed)'
+                    )
                 ]
             )
         ),
@@ -84,15 +84,15 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Deletes a category',
                 description: 'Deletes a category and all its associated feeds',
                 responses: [
-                    '204' => [
-                        'description' => 'Category deleted successfully'
-                    ],
-                    '404' => [
-                        'description' => 'Category not found'
-                    ],
-                    '409' => [
-                        'description' => 'Conflict: Category still has associated feeds'
-                    ]
+                    '204' => new Model\Response(
+                        description: 'Category deleted successfully'
+                    ),
+                    '404' => new Model\Response(
+                        description: 'Category not found'
+                    ),
+                    '409' => new Model\Response(
+                        description: 'Conflict: Category still has associated feeds'
+                    )
                 ]
             )
         )

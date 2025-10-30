@@ -32,9 +32,9 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Retrieves all RSS feeds',
                 description: 'Retrieves the collection of RSS Feeds ordered by title',
                 responses: [
-                    '200' => [
-                        'description' => 'RSS Feeds collection retrieved successfully'
-                    ]
+                    '200' => new Model\Response(
+                        description: 'RSS Feeds collection retrieved successfully'
+                    )
                 ]
             )
         ),
@@ -67,15 +67,15 @@ use ApiPlatform\OpenApi\Model;
                     ])
                 ),
                 responses: [
-                    '201' => [
-                        'description' => 'RSS Feed created successfully'
-                    ],
-                    '400' => [
-                        'description' => 'Invalid input'
-                    ],
-                    '422' => [
-                        'description' => 'Unprocessable entity'
-                    ]
+                    '201' => new Model\Response(
+                        description: 'RSS Feed created successfully'
+                    ),
+                    '400' => new Model\Response(
+                        description: 'Invalid input'
+                    ),
+                    '422' => new Model\Response(
+                        description: 'Unprocessable entity'
+                    )
                 ]
             )
         ),
@@ -87,12 +87,12 @@ use ApiPlatform\OpenApi\Model;
                 summary: 'Deletes a RSS Feed',
                 description: 'Deletes a RSS Feed and all its entries',
                 responses: [
-                    '204' => [
-                        'description' => 'RSS Feed deleted successfully'
-                    ],
-                    '404' => [
-                        'description' => 'RSS Feed not found'
-                    ]
+                    '204' => new Model\Response(
+                        description: 'RSS Feed deleted successfully'
+                    ),
+                    '404' => new Model\Response(
+                        description: 'RSS Feed not found'
+                    )
                 ]
             )
         )
