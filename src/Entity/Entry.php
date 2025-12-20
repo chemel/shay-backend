@@ -38,7 +38,7 @@ use ApiPlatform\OpenApi\Model;
         ),
         new Get(
             uriTemplate: '/entries/{id}',
-            requirements: ['id' => Requirement::UUID_V6],
+            requirements: ['id' => Requirement::UUID],
             description: 'Retrieves a RSS Feed entry',
             openapi: new Model\Operation(
                 summary: 'Gets a RSS feed entry',
@@ -55,7 +55,7 @@ use ApiPlatform\OpenApi\Model;
         ),
         new Patch(
             uriTemplate: '/entries/{id}',
-            requirements: ['id' => Requirement::UUID_V6],
+            requirements: ['id' => Requirement::UUID],
             description: 'Updates a RSS Feed entry (partial)',
             openapi: new Model\Operation(
                 summary: 'Updates the read status of an entry',
@@ -107,7 +107,7 @@ class Entry
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('entry:read')]
-    #[ApiProperty(description: 'The unique identifier of the RSS Feed entry')]
+    #[ApiProperty(identifier: true, description: 'The unique identifier of the RSS Feed entry')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

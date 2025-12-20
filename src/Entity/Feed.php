@@ -81,7 +81,7 @@ use ApiPlatform\OpenApi\Model;
         ),
         new Delete(
             uriTemplate: '/feeds/{id}',
-            requirements: ['id' => Requirement::UUID_V6],
+            requirements: ['id' => Requirement::UUID],
             description: 'Removes a RSS Feed',
             openapi: new Model\Operation(
                 summary: 'Deletes a RSS Feed',
@@ -109,7 +109,7 @@ class Feed
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('feed:read')]
-    #[ApiProperty(description: 'The unique identifier of the RSS Feed')]
+    #[ApiProperty(identifier: true, description: 'The unique identifier of the RSS Feed')]
     private ?Uuid $id = null;
 
     #[ORM\Column(type: Types::STRING, length: 255, unique: true)]

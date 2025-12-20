@@ -86,6 +86,8 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^3.92",
-        "symfony/maker-bundle": "^1.65"
+        "symfony/maker-bundle": "^1.65",
+        "symfony/stopwatch": "7.4.*",
+        "symfony/web-profiler-bundle": "7.4.*"
     }
 }

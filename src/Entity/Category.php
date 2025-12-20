@@ -78,7 +78,7 @@ use ApiPlatform\OpenApi\Model;
         ),
         new Delete(
             uriTemplate: '/categories/{id}',
-            requirements: ['id' => Requirement::UUID_V6],
+            requirements: ['id' => Requirement::UUID],
             description: 'Removes a category',
             openapi: new Model\Operation(
                 summary: 'Deletes a category',
@@ -110,6 +110,7 @@ class Category
     #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Groups('category:read')]
     #[ApiProperty(
+        identifier: true,
         description: 'The unique identifier of the category',
         example: '01234567-89ab-cdef-0123-456789abcdef'
     )]
