@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use Alc\Opml\Exception\InvalidOpmlException;
 use App\Service\OpmlService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -80,7 +81,13 @@ class ImportOpmlCommand extends Command
         }
 
         // Process the OPML file and get number of imported feeds
-        $counter = $this->opmlService->import($filename);
+        try {
+            $counter = $this->opmlService->import($filename);
+        } catch (InvalidOpmlException $e) {
+            $io->error($e->getMessage());
+
+            return Command::FAILURE;
+        }
 
         // Display success message with import count
         $io->success($counter.' feeds have been imported.');
