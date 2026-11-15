@@ -31,7 +31,7 @@ class ExportOpmlCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $opml = $this->opmlService->export();
-        $opml->save('feeds.opml');
+        file_put_contents('feeds.opml', $opml);
 
         $io->success('Feeds exported to feeds.opml');
 
